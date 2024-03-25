@@ -1,0 +1,23 @@
+---
+import { db, Group, asc, desc } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+
+const groups = await db
+  .select()
+  .from(Group)
+  .orderBy(desc(Group.year), asc(Group.circle));
+---
+
+<Layout>
+  <ul>
+    {
+      groups.map(({ year, circle, name, id }) => (
+        <li>
+          <a href={"/groups/" + id}>
+            {year}-{circle}: {name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

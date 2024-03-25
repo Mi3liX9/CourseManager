@@ -1,0 +1,41 @@
+---
+import { Student } from "astro:db";
+import { db } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const values = Object.fromEntries(formData.entries());
+
+  try {
+    await db.insert(Student).values([
+      {
+        firstName: values.first_name as string,
+        lastName: values.last_name as string,
+        fatherName: values.father_name as string,
+        grandFatherName: values.grand_father_name as string,
+        birthDate: new Date(values.birthdate as string),
+      },
+    ]);
+
+    Astro.redirect("/students");
+  } catch (e) {
+    if (e instanceof Error) console.error(e.message);
+  }
+}
+---
+
+<Layout>
+  <form method="post">
+    <input type="text" name="first_name" placeholder="first name" />
+    <input type="text" name="father_name" placeholder="father name" />
+    <input
+      type="text"
+      name="grand_father_name"
+      placeholder="grand father name"
+    />
+    <input type="text" name="last_name" placeholder="last name" />
+    <input type="date" name="birthdate" />
+    <button type="submit">submit</button>
+  </form>
+</Layout>
