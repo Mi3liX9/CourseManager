@@ -1,0 +1,32 @@
+---
+import { db, Group, asc, desc, Teacher } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+import { eq } from "astro:db";
+
+const groups = await db
+  .select({
+    year: Group.year,
+    circle: Group.circle,
+    name: Group.name,
+    id: Group.id,
+    teacher: Teacher,
+  })
+  .from(Group)
+  .orderBy(desc(Group.year), asc(Group.circle))
+  .leftJoin(Teacher, eq(Group.teacherId, Teacher.id));
+---
+
+<Layout>
+  <ul>
+    {
+      groups.map(({ year, circle, name, id, teacher }) => (
+        <li>
+          <a href={"/groups/" + id}>
+            {year}-{circle}: {name}, teacher{" "}
+            {teacher?.firstName + " " + teacher?.lastName}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

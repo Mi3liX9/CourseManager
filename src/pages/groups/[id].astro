@@ -1,0 +1,24 @@
+---
+import { Student } from "astro:db";
+import { StudentGroup } from "astro:db";
+import { db, Group, eq } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+
+const { id } = Astro.params;
+const [group] = await db
+  .select()
+  .from(Group)
+  .where(eq(Group.id, id as string));
+
+const studens = await db
+  .select({ Student })
+  .from(Student)
+  // .where(eq(Student.id, id as string))
+  .innerJoin(StudentGroup, eq(Student.id, StudentGroup.studentId))
+  .fullJoin(Group, eq(StudentGroup.groupId, Group.id))
+  .where(eq(Group.id, id as string));
+---
+
+<Layout>
+  <pre>{JSON.stringify({group, studens }, null, 2)}</pre>
+</Layout>
